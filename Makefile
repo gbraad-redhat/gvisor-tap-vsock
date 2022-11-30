@@ -2,7 +2,7 @@ TAG ?= $(shell git describe --match=NeVeRmAtCh --always --abbrev=40 --dirty)
 CONTAINER_RUNTIME ?= podman
 
 .PHONY: build
-build: gvproxy qemu-wrapper vm
+build: gvproxy qemu-wrapper vm wsl-gvproxy wsl-vm
 
 TOOLS_DIR := tools
 include tools/tools.mk
@@ -21,10 +21,19 @@ qemu-wrapper:
 vm:
 	GOOS=linux CGO_ENABLED=0 go build $(LDFLAGS) -o bin/vm ./cmd/vm
 
+.PHONY: wsl-vm
+wsl-vm:
+	GOOS=linux CGO_ENABLED=0 go build $(LDFLAGS) -o bin/wsl-vm ./cmd/wsl-vm
+
 # win-sshproxy is compiled as a windows GUI to support backgrounding
 .PHONY: win-sshproxy
 win-sshproxy:
 	GOOS=windows go build -ldflags -H=windowsgui -o bin/win-sshproxy.exe ./cmd/win-sshproxy
+
+# wsl-gvproxy compiled as a windows GUI to support backgrounding
+.PHONY: wsl-gvproxy
+wsl-gvproxy:
+	GOOS=windows go build -ldflags -H=windowsgui -o bin/wsl-gvproxy.exe ./cmd/wsl-gvproxy
 
 .PHONY: clean
 clean:
